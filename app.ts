@@ -1,11 +1,18 @@
 import {
   getJsonCrmCitas,
   tranformJsonToDBModel,
+  writeJsonPreDB,
 } from "./helpers/fileManipulation";
-const rootFile = "./data/dev/citascrm.json";
+
+import { STAGE } from "./enviroment/variables";
+const rootFile = `./data/${STAGE}/citascrm.json`;
+
+const outputLink = `./data/${STAGE}/calendarDBModel.json`;
 
 const arrayCitasCrm = getJsonCrmCitas(rootFile);
 
 //console.log(arrayCitasCrm);
 
-tranformJsonToDBModel(arrayCitasCrm);
+const calendarsGmailDBModel = tranformJsonToDBModel(arrayCitasCrm);
+
+writeJsonPreDB(calendarsGmailDBModel, outputLink);

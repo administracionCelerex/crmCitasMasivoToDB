@@ -15,25 +15,27 @@ export const tranformJsonToDBModel = (citascrm: CitasCrm[]) => {
   citascrm.forEach((citaCrm) => {
     const userLoginCrm = citaCrm.Create_User_Login;
 
-    const isExistEmail = calendarsGmailDBModel.some(
+    const calendarAlive = calendarsGmailDBModel.find(
       (caleGmailDBModel) => caleGmailDBModel.email === userLoginCrm
     );
     //console.log(isExistEmail);
 
-    if (!isExistEmail) {
+    const caledarInfoItem: CalendarInfo = {
+      calendarId: citaCrm.Calendar_ID,
+      channelId: "",
+      description: citaCrm.Tipo_de_Cita,
+      dueDate: "",
+      idZoho: citaCrm.ID,
+      isActive: true,
+      name: citaCrm.Nombre,
+      syncToken: "",
+      watchedResourceId: "",
+    };
+
+    if (!calendarAlive) {
       //crear el usuario en el arreglo
       const calendarInfo: CalendarInfo[] = [];
-      calendarInfo.push({
-        calendarId: citaCrm.Calendar_ID,
-        channelId: "",
-        description: citaCrm.Tipo_de_Cita,
-        dueDate: "",
-        idZoho: citaCrm.ID,
-        isActive: true,
-        name: citaCrm.Nombre,
-        syncToken: "",
-        watchedResourceId: "",
-      });
+      calendarInfo.push(caledarInfoItem);
       const calendarItem: Calendar = {
         email: userLoginCrm,
         isActiveAll: false,
@@ -44,7 +46,21 @@ export const tranformJsonToDBModel = (citascrm: CitasCrm[]) => {
 
       calendarsGmailDBModel.push(calendarItem);
 
-      console.log(calendarsGmailDBModel);
+      return;
     }
+
+    //console.log("Ya hay un correo existente");
+
+    calendarAlive.calendarsInfo?.push(caledarInfoItem);
   });
+  //console.log(calendarsGmailDBModel);
+  return calendarsGmailDBModel;
+};
+
+export const writeJsonPreDB = (
+  calendarsGmailDBModel: Calendar[],
+  outputLink: string
+) => {
+  let data = JSON.stringify(calendarsGmailDBModel);
+  fs.writeFileSync(`${outputLink}`, data);
 };
